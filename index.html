@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jingles Trophées CCABTP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  :root{
+    color-scheme: dark;
+    --ground:#14121a;
+    --panel:#1d1a26;
+    --line:#2e2a3b;
+    --text:#ece9f3;
+    --muted:#9d97ad;
+    --accent:#a58bd6;      /* violet du tableau, éclairci pour le fond sombre */
+    --accent-ink:#1a1326;
+    --live:#ff5a4e;
+    --display:"Barlow Condensed","Arial Narrow",sans-serif;
+    --body:"Barlow",system-ui,-apple-system,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--ground);color:var(--text);font:15px/1.5 var(--body);padding:0 16px 64px}
+  .wrap{max-width:1180px;margin:0 auto}
+
+  header{padding-block:40px 28px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:16px 32px;align-items:end;justify-content:space-between}
+  .eyebrow{font:600 12px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 10px}
+  h1{font:700 clamp(34px,5vw,54px)/1 var(--display);margin:0;text-wrap:balance;letter-spacing:.01em}
+  .meta{color:var(--muted);font-size:14px;max-width:420px;margin:0}
+
+  .bar{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--ground) 92%,transparent);backdrop-filter:blur(8px);
+       display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding-block:12px;border-bottom:1px solid var(--line)}
+  .now{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--line);flex:none}
+  .now.on .dot{background:var(--live);box-shadow:0 0 0 4px color-mix(in srgb,var(--live) 25%,transparent)}
+  .now span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)}
+  .now.on span{color:var(--text)}
+  .hint{color:var(--muted);font-size:13px}
+  kbd{font:500 12px var(--mono);border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--text)}
+
+  .cues{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr))}
+  .cue{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+  .cue.playing{border-color:var(--accent)}
+  .head{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;padding:16px 18px 14px}
+  .num{grid-row:span 2;font:700 40px/1 var(--display);color:var(--accent);font-variant-numeric:tabular-nums;min-width:1.2ch}
+  .seq{font:600 12px/1.3 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:4px 0 0}
+  .title{font:700 26px/1.1 var(--display);margin:0}
+  .title em{font-style:normal;font-weight:500;color:var(--muted)}
+  .use{padding:0 18px 14px;margin:0;color:var(--muted);font-size:14px}
+
+  .player{position:relative;aspect-ratio:16/9;max-width:100%;background:#000}
+  .player > div, .player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+  .ctl{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 18px 16px}
+  button{font:600 14px var(--body);border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--text);padding:8px 14px;cursor:pointer}
+  button:hover{border-color:var(--muted)}
+  button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .go{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+  .go:hover{filter:brightness(1.1);border-color:var(--accent)}
+  .tc{font:500 13px var(--mono);color:var(--text);background:var(--ground);border:1px solid var(--line);border-radius:6px;padding:7px 10px;font-variant-numeric:tabular-nums}
+  .yt{margin-left:auto;color:var(--muted);font-size:13px;text-decoration:none}
+  .yt:hover{color:var(--text)}
+  .prog{height:3px;background:var(--line)}
+  .prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s linear}
+
+  footer{margin-top:36px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
+  @media (prefers-reduced-motion:reduce){.prog i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <p class="eyebrow">CCABTP · Conduite son</p>
+      <h1>Jingles musicaux — Trophées de l’Innovation 2026</h1>
+    </div>
+    <p class="meta">7 cues. « Jouer l’extrait » cale la lecture sur le découpage prévu et coupe à la fin. Une seule piste à la fois.</p>
+  </header>
+
+  <div class="bar">
+    <div class="now" id="now"><i class="dot"></i><span id="nowTxt">Aucune lecture</span></div>
+    <button id="stopAll" type="button">■ Tout arrêter</button>
+    <span class="hint"><kbd>1</kbd>–<kbd>7</kbd> jouer · <kbd>Échap</kbd> stop</span>
+  </div>
+
+  <ol class="cues" id="cues"></ol>
+
+  <footer>Source : « Jingles musiques Trophées de l’innovation.xlsx », onglet Jingles Trophées. Cue 3 : le tableau renvoyait vers une recherche YouTube, j’ai pris l’audio officiel Polo &amp; Pan.</footer>
+</div>
+
+<script>
+const CUES = [
+  {seq:"Ouverture + fermeture", track:"Bye Bye Macadam", artist:"Rone", id:"kfoJUeyMsOE", start:25, end:60, cut:"00:25 → 01:00 env.", use:"Jingle d’ouverture + entrée animateur / reprise en fermeture et sortie"},
+  {seq:"Montées de scène — intervenants", track:"A New Error", artist:"Moderat", id:"QpxFcMYRV08", start:30, end:60, cut:"00:30 → 01:00", use:"Entrées de l’ensemble des jurys et des intervenants"},
+  {seq:"Remises des 7 catégories", track:"Ani Kuni", artist:"Polo & Pan", id:"mw_SEr41-cE", start:70, end:null, cut:"01:10 → 01:30 et +", use:"Annonce du lauréat / applaudissements / remise trophée et médailles"},
+  {seq:"Coups de cœur du Jury 1 & 2", track:"Tieduprightnow", artist:"Parcels", id:"_2qsU8FGU_E", start:0, end:25, cut:"00:00 → 00:25", use:"Annonce du prix / montée sur scène / début de remise"},
+  {seq:"CFA de demain — Serrotique", track:"The Look", artist:"Metronomy", id:"sFrNsSnk8GM", start:0, end:20, cut:"00:00 → 00:20", use:"Annonce du prix / montée sur scène / lancement de la remise"},
+  {seq:"Prix spécial — initiative jeune génération engagée", track:"Back On 74", artist:"Jungle", id:"q3lX2p_Uy9I", start:0, end:30, cut:"00:00 → 00:30", use:"Annonce du prix / applaudissements / montée sur scène / début de remise"},
+  {seq:"Grand Prix du Jury / LEX", track:"A Moment Apart", artist:"ODESZA", id:"xarC5jAiO7w", start:45, end:60, cut:"00:45 → 01:00", use:"Annonce Baticare / montée sur scène / remise trophée et médailles / annonce LEX"},
+];
+
+const list = document.getElementById('cues');
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+CUES.forEach((c,i)=>{
+  const li = document.createElement('li');
+  li.className='cue'; li.id='cue-'+(i+1);
+  li.innerHTML = `
+    <div class="head">
+      <span class="num">${i+1}</span>
+      <p class="seq">${esc(c.seq)}</p>
+      <h2 class="title">${esc(c.track)} <em>— ${esc(c.artist)}</em></h2>
+    </div>
+    <p class="use">${esc(c.use)}</p>
+    <div class="player"><div id="p${i}"></div></div>
+    <div class="prog"><i id="g${i}"></i></div>
+    <div class="ctl">
+      <button class="go" type="button" data-play="${i}">▶ Jouer l’extrait</button>
+      <button type="button" data-stop="${i}">■ Stop</button>
+      <span class="tc">${esc(c.cut)}</span>
+      <a class="yt" href="https://www.youtube.com/watch?v=${c.id}&t=${c.start}s" target="_blank" rel="noopener">YouTube ↗</a>
+    </div>`;
+  list.appendChild(li);
+});
+
+const players = [];
+let current = -1;
+const nowEl = document.getElementById('now'), nowTxt = document.getElementById('nowTxt');
+
+function setNow(i){
+  current = i;
+  document.querySelectorAll('.cue').forEach((el,k)=>el.classList.toggle('playing',k===i));
+  if(i<0){nowEl.classList.remove('on');nowTxt.textContent='Aucune lecture';return;}
+  const c=CUES[i]; nowEl.classList.add('on');
+  nowTxt.textContent=`Cue ${i+1} · ${c.track} — ${c.artist}`;
+}
+function stopAll(except){
+  players.forEach((p,k)=>{ if(k!==except && p && p.pauseVideo) p.pauseVideo(); });
+}
+function play(i){
+  const p=players[i]; if(!p||!p.seekTo) return;
+  stopAll(i);
+  p.seekTo(CUES[i].start,true); p.playVideo(); setNow(i);
+}
+function stop(i){ const p=players[i]; if(p&&p.pauseVideo) p.pauseVideo(); if(current===i) setNow(-1); }
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.play!==undefined) play(+b.dataset.play);
+  else if(b.dataset.stop!==undefined) stop(+b.dataset.stop);
+  else if(b.id==='stopAll'){ stopAll(-1); setNow(-1); }
+});
+document.addEventListener('keydown',e=>{
+  if(e.target.closest('input,textarea')) return;
+  if(e.key==='Escape'){ stopAll(-1); setNow(-1); }
+  const n=parseInt(e.key,10); if(n>=1&&n<=CUES.length) play(n-1);
+});
+
+// YouTube IFrame API
+window.onYouTubeIframeAPIReady = () => {
+  CUES.forEach((c,i)=>{
+    players[i] = new YT.Player('p'+i,{
+      videoId:c.id,
+      playerVars:{start:c.start, rel:0, playsinline:1, modestbranding:1},
+      events:{
+        onStateChange:ev=>{
+          if(ev.data===YT.PlayerState.PLAYING){ stopAll(i); setNow(i); }
+          else if((ev.data===YT.PlayerState.PAUSED||ev.data===YT.PlayerState.ENDED) && current===i) setNow(-1);
+        }
+      }
+    });
+  });
+};
+const s=document.createElement('script'); s.src='https://www.youtube.com/iframe_api'; document.head.appendChild(s);
+
+// Coupe à la fin du découpage + barre de progression de l'extrait
+setInterval(()=>{
+  players.forEach((p,i)=>{
+    if(!p||!p.getCurrentTime) return;
+    const c=CUES[i], t=p.getCurrentTime(), end=c.end ?? (c.start+20);
+    const pct=Math.max(0,Math.min(1,(t-c.start)/(end-c.start)));
+    document.getElementById('g'+i).style.width=(pct*100)+'%';
+    if(c.end!==null && i===current && t>=c.end) { p.pauseVideo(); setNow(-1); }
+  });
+},250);
+</script>
+</body>
+</html>
